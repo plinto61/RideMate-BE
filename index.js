@@ -3,6 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
+import getUsers from './dao/users.mjs';
+import { initialiseDbClient } from './dao/client.mjs';
+
 const app = express();
 dotenv.config();
 
@@ -14,9 +17,12 @@ const supabase = createClient(
 	process.env.SUPABASE_SERVICE_KEY
 );
 
+initialiseDbClient(supabase);
+
 app.get('/users', async (req, res) => {
-	const { data, error } = await supabase.from('users').select();
-	console.log(JSON.stringify(data, null, '\t'));
+	console.log(await getUsers())
+	let {data, error} = await getUsers(1); 
+	console.log(data, error)
 	res.send(data);
 });
 
